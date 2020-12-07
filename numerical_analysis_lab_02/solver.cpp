@@ -17,6 +17,12 @@ vecvec Solver::calc_coefs()
 			double a = 1. / (n * integrate(k_1, x_curr - step, x_curr));
 			res[0].push_back(a);
 		}
+		else if (x_curr - break_point < step)
+		{
+			double a = 1. / (n * integrate(k_1, x_curr - step, break_point) 
+			        	   + n * integrate(k_2, break_point, x_curr));
+			res[0].push_back(a);
+		}
 		else
 		{
 			double a = 1. / (n * integrate(k_2, x_curr - step, x_curr));
@@ -34,6 +40,16 @@ vecvec Solver::calc_coefs()
 		{
 			double f = n * integrate(f_1, x_curr - step, x_curr);
 			double d = n * integrate(q_1, x_curr - step, x_curr);
+
+			res[1].push_back(d);
+			res[2].push_back(f);
+		}
+		else if (x_curr - break_point < step)
+		{
+			double f = n * integrate(f_1, x_curr - step, break_point) 
+				     + n * integrate(f_2, break_point, x_curr);
+			double d = n * integrate(q_1, x_curr - step, break_point)
+				     + n * integrate(q_2, break_point, x_curr);
 
 			res[1].push_back(d);
 			res[2].push_back(f);
