@@ -17,14 +17,16 @@ private:
 	func k_2, q_2, f_2;
 	double integrate(func function, double from, double to);
 	vecvec calc_coefs();
-	vecvec coef_to_system(vecvec coefs);
+	vecvec coefs_to_system(vecvec coefs);
+	vec solve_matrix(vecvec matrix);
 
 public:
 	Solver(
 		int n_,
-		double p_,
+		double break_point_,
 		func k_1_, func q_1_, func f_1_,
 		func k_2_, func q_2_, func f_2_
 	);
+	vec solve();
 };
 

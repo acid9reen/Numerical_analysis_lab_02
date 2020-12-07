@@ -69,7 +69,7 @@ vecvec Solver::calc_coefs()
 	return res;
 }
 
-vecvec Solver::coef_to_system(vecvec coefs)
+vecvec Solver::coefs_to_system(vecvec coefs)
 {
 	vecvec res = { {0}, {1}, {0} , coefs[2]};
 
@@ -77,7 +77,7 @@ vecvec Solver::coef_to_system(vecvec coefs)
 	{
 		double a = coefs[0][i] / (step * step);
 		double b = coefs[0][i + 1] / (step * step);
-		double c = a + b + coefs[1][i];
+		double c = -1 * (a + b + coefs[1][i]);
 
 		res[0].push_back(a);
 		res[1].push_back(c);
@@ -89,6 +89,46 @@ vecvec Solver::coef_to_system(vecvec coefs)
 	res[2].push_back(0);
 
 	return res;
+}
+
+
+/**
+	* n - число уравнений (строк матрицы)
+	* b - диагональ, лежащая над главной (нумеруется: [0;n-2])
+	* c - главная диагональ матрицы A (нумеруется: [0;n-1])
+	* a - диагональ, лежащая под главной (нумеруется: [1;n-1])
+	* f - правая часть (столбец)
+	* x - решение, массив x будет содержать ответ
+*/
+vec Solver::solve_matrix(vecvec matrix)
+{		
+	vec a = matrix[0];
+	vec c = matrix[1];
+	vec b = matrix[2];
+	vec f = matrix[3];
+	vec x;
+
+	for (size_t i = 0; i < n; i++)
+	{
+		x.push_back(0);
+	}
+		
+	double m;
+	for (int i = 1; i < n; i++)
+	{
+		m = a[i] / c[i - 1];
+		c[i] = c[i] - m * b[i - 1];
+		f[i] = f[i] - m * f[i - 1];
+	}
+
+	x[n - 1] = f[n - 1] / c[n - 1];
+
+	for (int i = n - 2; i >= 0; i--)
+	{
+		x[i] = (f[i] - b[i] * x[i + 1]) / c[i];
+	}
+
+	return x;
 }
 
 Solver::Solver(
@@ -112,4 +152,9 @@ Solver::Solver(
 	q_2 = q_2_;
 	f_2 = f_2_;
 	
+}
+
+vec Solver::solve()
+{
+	return(solve_matrix(coefs_to_system(calc_coefs())));
 }
