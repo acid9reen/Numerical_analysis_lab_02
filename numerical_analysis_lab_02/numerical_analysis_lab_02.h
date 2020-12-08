@@ -11,6 +11,7 @@ public:
     Numerical_analysis_lab_02(QWidget *parent = Q_NULLPTR);
 private slots:
     void plot_test_task();
+    void plot_main_task();
 private:
     Ui::Numerical_analysis_lab_02Class ui;
 };
