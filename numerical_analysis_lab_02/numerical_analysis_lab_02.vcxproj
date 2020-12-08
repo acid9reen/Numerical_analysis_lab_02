@@ -94,6 +94,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="functions.h" />
     <ClInclude Include="solver.h" />
   </ItemGroup>
   <ItemGroup>

@@ -10,7 +10,7 @@ vecvec Solver::calc_coefs()
 	double x_curr = step;
 	vecvec res = { {}, {}, {0} };  // initial condition 1
 
-	for (size_t i = 1; i < n; i++)
+	for (size_t i = 0; i < n; i++)
 	{
 		if (x_curr < break_point)
 		{
@@ -34,7 +34,7 @@ vecvec Solver::calc_coefs()
 
 	x_curr = 3 * step / 2.;
 
-	for (size_t i = 1; i < n - 1; i++)
+	for (size_t i = 0; i < n - 1; i++)
 	{
 		if (x_curr < break_point)
 		{
@@ -62,6 +62,8 @@ vecvec Solver::calc_coefs()
 			res[1].push_back(d);
 			res[2].push_back(f);
 		}
+
+		x_curr += step;
 	}
 
 	res[2].push_back(0);  // initial condition 2
@@ -73,7 +75,7 @@ vecvec Solver::coefs_to_system(vecvec coefs)
 {
 	vecvec res = { {0}, {1}, {0} , coefs[2]};
 
-	for (size_t i = 1; i < n; i++)
+	for (size_t i = 0; i < n - 1; i++)
 	{
 		double a = coefs[0][i] / (step * step);
 		double b = coefs[0][i + 1] / (step * step);
@@ -107,6 +109,8 @@ vec Solver::solve_matrix(vecvec matrix)
 	vec b = matrix[2];
 	vec f = matrix[3];
 	vec x;
+
+	n++;
 
 	for (size_t i = 0; i < n; i++)
 	{

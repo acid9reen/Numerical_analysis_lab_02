@@ -9,7 +9,8 @@ class Numerical_analysis_lab_02 : public QMainWindow
 
 public:
     Numerical_analysis_lab_02(QWidget *parent = Q_NULLPTR);
-
+private slots:
+    void plot_test_task();
 private:
     Ui::Numerical_analysis_lab_02Class ui;
 };
