@@ -52,7 +52,7 @@ vecvec Solver::calc_coefs()
 				     + n * integrate(q_2, break_point, x_curr);
 
 			res[1].push_back(d);
-			res[2].push_back(f);
+			res[2].push_back(-f);
 		}
 		else
 		{
@@ -60,7 +60,7 @@ vecvec Solver::calc_coefs()
 			double d = n * integrate(q_2, x_curr - step, x_curr);
 
 			res[1].push_back(d);
-			res[2].push_back(f);
+			res[2].push_back(-f);
 		}
 
 		x_curr += step;

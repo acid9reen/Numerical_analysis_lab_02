@@ -33,6 +33,7 @@ void Numerical_analysis_lab_02::plot_test_task()
 {
     int n = ui.test_n_input->text().toInt();
     auto* series = new QLineSeries();
+    series->setName("V");
     auto* chart = new QChart();
 
     auto solver = new Solver
@@ -54,7 +55,7 @@ void Numerical_analysis_lab_02::plot_test_task()
         x_curr += step;
     }
 
-    chart->legend()->hide();
+    chart->legend()->setAlignment(Qt::AlignBottom);
     chart->addSeries(series);
     chart->createDefaultAxes();
     chart->setTitle("Solution");
@@ -77,6 +78,8 @@ void Numerical_analysis_lab_02::plot_main_task()
     // Main task plot
     auto* series_1 = new QLineSeries();
     auto* series_2 = new QLineSeries();
+    series_1->setName("V_1");
+    series_2->setName("V_2");
     auto* chart = new QChart();
 
     auto solver_1 = new Solver
@@ -115,7 +118,7 @@ void Numerical_analysis_lab_02::plot_main_task()
         x_curr += step;
     }
 
-    chart->legend()->hide();
+    chart->legend()->setAlignment(Qt::AlignBottom);
     chart->addSeries(series_1);
     chart->addSeries(series_2);
     chart->createDefaultAxes();
