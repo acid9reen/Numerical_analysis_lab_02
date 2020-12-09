@@ -1,11 +1,24 @@
 #include <vector>
+#include <string>
+#include <sstream>
 #include <cstdlib>
+#include <QString>
+#include <QTableWidgetItem>
 #include "numerical_analysis_lab_02.h"
 #include "functions.h"
 #include "solver.h"
 
 using namespace functions;
 using std::vector;
+
+
+QString approx(double num)
+{
+    std::ostringstream streamObj;
+    streamObj << std::scientific << num;
+
+    return QString::fromStdString(streamObj.str());
+}
 
 
 Numerical_analysis_lab_02::Numerical_analysis_lab_02(QWidget *parent)
@@ -55,8 +68,13 @@ void Numerical_analysis_lab_02::plot_main_task()
 {
     int n = ui.main_n_input->text().toInt();
 
-    // Main task plot
+    // Clear table
+    while (ui.main_table->rowCount() > 0)
+    {
+        ui.main_table->removeRow(0);
+    }
 
+    // Main task plot
     auto* series_1 = new QLineSeries();
     auto* series_2 = new QLineSeries();
     auto* chart = new QChart();
@@ -115,12 +133,32 @@ void Numerical_analysis_lab_02::plot_main_task()
     
     x_curr = 0;
     step = 1. / n;
+    double max_delta_u_v = 0;
+    double max_delta_u_v_x_coord = 0;
 
     for (size_t i = 0; i < vs_1.size(); i++)
-    {
-        error_series->append(x_curr, abs(vs_1[i] - vs_2[2 * i]));
+    {   
+        double delta_u_v = vs_1[i] - vs_2[2 * i];
+
+        ui.main_table->insertRow(i);
+        ui.main_table->setItem(i, 0, new QTableWidgetItem(approx(x_curr)));
+        ui.main_table->setItem(i, 1, new QTableWidgetItem(approx(vs_1[i])));
+        ui.main_table->setItem(i, 2, new QTableWidgetItem(approx(vs_2[2 * i])));
+        ui.main_table->setItem(i, 3, new QTableWidgetItem(approx(delta_u_v)));
+
+
+        if (delta_u_v > max_delta_u_v)
+        {
+            max_delta_u_v = delta_u_v;
+            max_delta_u_v_x_coord = x_curr;
+        }
+
+        error_series->append(x_curr, abs(delta_u_v));
         x_curr += step;
     }
+
+    ui.max_delta_v_v->setText(approx(max_delta_u_v));
+    ui.max_delta_v_v_x_coord->setText(approx(max_delta_u_v_x_coord));
 
     error_chart->legend()->hide();
     error_chart->addSeries(error_series);
