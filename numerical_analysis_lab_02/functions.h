@@ -63,4 +63,14 @@ namespace functions
 	{
 		return 1;
 	}
+
+	double u_1_test(double x)
+	{
+		return 0.06393352077249962 * (-exp(-(2. / 3.) * x) + exp((2. / 3.) * x));
+	}
+
+	double u_2_test(double x)
+	{
+		return -0.1014378993911736 * exp(2. * x) - 1.850734448924362 * exp(-2. * x) + 1;
+	}
 }

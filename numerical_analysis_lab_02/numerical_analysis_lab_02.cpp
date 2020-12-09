@@ -32,9 +32,19 @@ Numerical_analysis_lab_02::Numerical_analysis_lab_02(QWidget *parent)
 void Numerical_analysis_lab_02::plot_test_task()
 {
     int n = ui.test_n_input->text().toInt();
-    auto* series = new QLineSeries();
-    series->setName("V");
-    auto* chart = new QChart();
+    auto* num_solution_series = new QLineSeries();
+    num_solution_series->setName("V");
+    auto* true_solution_series = new QLineSeries();
+    true_solution_series->setName("U");
+    auto* error_series = new QLineSeries();
+    auto* solution_chart = new QChart();
+    auto* error_chart = new QChart();
+
+    // Clear table
+    while (ui.test_table->rowCount() > 0)
+    {
+        ui.test_table->removeRow(0);
+    }
 
     auto solver = new Solver
     (
@@ -47,22 +57,60 @@ void Numerical_analysis_lab_02::plot_test_task()
     vector<double> vs = solver->solve();
     double x_curr = 0;
     double step = 1. / n;
+    double max_delta_u_v = 0;
+    double max_delta_u_v_x_coord = 0;
 
-
-    for (auto it = begin(vs); it != end(vs); ++it) 
+    for (size_t i = 0; i < vs.size(); i++) 
     {
-        series->append(x_curr, *it);
+        double u_curr = 0;
+
+        if (x_curr < 0.5)
+            u_curr = u_1_test(x_curr);
+        else
+            u_curr = u_2_test(x_curr);
+
+        double delta_u_v = abs(u_curr - vs[i]);
+
+        if (delta_u_v > max_delta_u_v)
+        {
+            max_delta_u_v = delta_u_v;
+            max_delta_u_v_x_coord = x_curr;
+        }
+
+        ui.test_table->insertRow(i);
+        ui.test_table->setItem(i, 0, new QTableWidgetItem(approx(x_curr)));
+        ui.test_table->setItem(i, 1, new QTableWidgetItem(approx(u_curr)));
+        ui.test_table->setItem(i, 2, new QTableWidgetItem(approx(vs[i])));
+        ui.test_table->setItem(i, 3, new QTableWidgetItem(approx(delta_u_v)));
+
+        num_solution_series->append(x_curr, vs[i]);
+        true_solution_series->append(x_curr, u_curr);
+        error_series->append(x_curr, delta_u_v);
+
         x_curr += step;
     }
 
-    chart->legend()->setAlignment(Qt::AlignBottom);
-    chart->addSeries(series);
-    chart->createDefaultAxes();
-    chart->setTitle("Solution");
+    ui.max_delta_u_v->setText(approx(max_delta_u_v));
+    ui.max_delta_u_v_x_coord->setText(approx(max_delta_u_v_x_coord));
+
+    solution_chart->legend()->setAlignment(Qt::AlignBottom);
+    solution_chart->addSeries(true_solution_series);
+    solution_chart->addSeries(num_solution_series);
+    solution_chart->createDefaultAxes();
+    solution_chart->setTitle("Solution");
 
     ui.test_solution_plot->setRubberBand(QChartView::RectangleRubberBand);
     ui.test_solution_plot->setRenderHint(QPainter::Antialiasing);
-    ui.test_solution_plot->setChart(chart);
+    ui.test_solution_plot->setChart(solution_chart);
+
+    error_chart->legend()->hide();
+    error_chart->addSeries(error_series);
+    error_chart->createDefaultAxes();
+    error_chart->setTitle("Error");
+
+    ui.test_error_plot->setRubberBand(QChartView::RectangleRubberBand);
+    ui.test_error_plot->setRenderHint(QPainter::Antialiasing);
+    ui.test_error_plot->setChart(error_chart);
 }
 
 void Numerical_analysis_lab_02::plot_main_task()
@@ -110,7 +158,7 @@ void Numerical_analysis_lab_02::plot_main_task()
 
     vector<double> vs_2 = solver_2->solve();
     x_curr = 0;
-    step = 1. / (n * 2);
+    step = 1. / (n * 2.);
 
     for (auto it = begin(vs_2); it != end(vs_2); ++it)
     {
@@ -141,7 +189,7 @@ void Numerical_analysis_lab_02::plot_main_task()
 
     for (size_t i = 0; i < vs_1.size(); i++)
     {   
-        double delta_u_v = vs_1[i] - vs_2[2 * i];
+        double delta_u_v = abs(vs_1[i] - vs_2[2 * i]);
 
         ui.main_table->insertRow(i);
         ui.main_table->setItem(i, 0, new QTableWidgetItem(approx(x_curr)));
@@ -156,7 +204,7 @@ void Numerical_analysis_lab_02::plot_main_task()
             max_delta_u_v_x_coord = x_curr;
         }
 
-        error_series->append(x_curr, abs(delta_u_v));
+        error_series->append(x_curr, delta_u_v);
         x_curr += step;
     }
 
